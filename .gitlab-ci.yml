@@ -1,0 +1,18 @@
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  script:
+    - docker build -t iris_classifier_service .
+
+deploy:
+  stage: deploy
+  script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    - docker tag iris_classifier_service registry.heroku.com/titanicdeploy/web
+    - docker push registry.heroku.com/titanicdeploy/web
+    - heroku container:release web -a titanicdeploy
+  only:
+    - main
